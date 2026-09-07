@@ -10,6 +10,7 @@
 <div class="auth-page">
   <div class="auth-card">
     <h1>RaiseTimeLine</h1>
+    <div id="login-success" class="success-message" hidden>登録が完了しました。ログインしてください。</div>
     <div id="login-error" class="error-message" hidden></div>
     <form id="login-form">
       <div class="form-field">
@@ -33,6 +34,9 @@
 <script src="js/auth.js"></script>
 <script>
   handleLoginForm();
+  if (new URLSearchParams(location.search).get("registered") === "1") {
+    document.getElementById("login-success").hidden = false;
+  }
 </script>
 </body>
 </html>

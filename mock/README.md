@@ -35,4 +35,5 @@ python3 -m http.server 8000
 | post-detail.html | 投稿詳細（コメント一覧） |
 | profile.html | プロフィール（`?user=<id>`で対象ユーザーを指定） |
 | profile-edit.html | プロフィール編集 |
+| follow-list.html | フォロー中／フォロワー一覧（`?user=<id>&type=following\|followers`） |
 | search.html | 検索（投稿／ユーザー） |
