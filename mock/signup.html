@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>サインアップ - RaiseTimeLine</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>アカウント作成</h1>
+    <div id="signup-error" class="error-message" hidden></div>
+    <form id="signup-form">
+      <div class="form-field">
+        <label for="username">ユーザー名</label>
+        <input type="text" id="username" required maxlength="30">
+      </div>
+      <div class="form-field">
+        <label for="email">メールアドレス</label>
+        <input type="email" id="email" required autocomplete="username">
+      </div>
+      <div class="form-field">
+        <label for="password">パスワード</label>
+        <input type="password" id="password" required autocomplete="new-password">
+      </div>
+      <button type="submit" class="btn-primary">登録する</button>
+    </form>
+    <p class="auth-switch">
+      既にアカウントをお持ちの方は <a href="index.html">ログイン</a>
+    </p>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  handleSignupForm();
+</script>
+</body>
+</html>

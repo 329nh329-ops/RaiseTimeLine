@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>投稿詳細 - RaiseTimeLine</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="app-header">
+  <a href="timeline.html" class="icon-button" title="戻る">←</a>
+  <span class="logo">投稿</span>
+  <div class="header-actions">
+    <a href="search.html" class="icon-button" title="検索">🔍</a>
+    <a id="header-my-icon" href="profile.html">
+      <img class="avatar" src="" alt="自分のアイコン">
+    </a>
+    <button id="logout-button" class="btn-danger-text">ログアウト</button>
+  </div>
+</header>
+
+<div class="page-container">
+  <div id="post-detail-target"></div>
+
+  <form id="comment-form" class="comment-form">
+    <img id="comment-form-avatar" class="avatar" src="" alt="">
+    <textarea id="comment-body" placeholder="コメントする" maxlength="280"></textarea>
+    <button type="submit" class="btn-primary" style="width:auto;padding:8px 18px;align-self:flex-end;">コメントする</button>
+  </form>
+
+  <div id="comment-list"></div>
+</div>
+
+<template id="comment-card-template">
+  <div class="comment-card" data-comment-id="">
+    <a class="comment-avatar-link" href="#">
+      <img class="avatar comment-avatar" src="" alt="">
+    </a>
+    <div class="post-card-body">
+      <div class="post-meta">
+        <a class="username comment-username-link" href="#"></a>
+        <span class="time"></span>
+      </div>
+      <div class="post-text comment-text"></div>
+      <div class="post-actions">
+        <button class="action-button comment-like-btn">♡ <span class="like-count"></span></button>
+        <div class="post-manage" hidden>
+          <button class="link-button edit-btn">編集</button>
+          <button class="link-button danger delete-btn">削除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/post-detail.js"></script>
+</body>
+</html>

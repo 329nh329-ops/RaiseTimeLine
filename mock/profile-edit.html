@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>プロフィール編集 - RaiseTimeLine</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="app-header">
+  <a href="profile.html" class="icon-button" title="戻る">←</a>
+  <span class="logo">プロフィールを編集</span>
+  <div class="header-actions">
+    <button id="logout-button" class="btn-danger-text">ログアウト</button>
+  </div>
+</header>
+
+<div class="page-container">
+  <form id="profile-edit-form" class="edit-form">
+    <div id="edit-error" class="error-message" hidden></div>
+    <div class="icon-edit-row">
+      <img id="icon-preview" class="avatar-large" src="" alt="">
+      <label class="btn-secondary" style="cursor:pointer;">
+        画像を変更
+        <input type="file" id="icon-input" accept="image/*" hidden>
+      </label>
+    </div>
+    <div class="form-field">
+      <label for="username">ユーザー名</label>
+      <input type="text" id="username" required maxlength="30">
+    </div>
+    <div class="form-field">
+      <label for="bio">自己紹介（160文字まで）</label>
+      <textarea id="bio" maxlength="160"></textarea>
+      <div style="text-align:right;font-size:12px;color:#536471;"><span id="bio-count">0</span>/160</div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn-primary">保存</button>
+      <a href="profile.html" class="btn-secondary">キャンセル</a>
+    </div>
+  </form>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/profile-edit.js"></script>
+</body>
+</html>
