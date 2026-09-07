@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>検索 - RaiseTimeLine</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="app-header">
+  <a href="timeline.html" class="icon-button" title="戻る">←</a>
+  <span class="logo">検索</span>
+  <div class="header-actions">
+    <a id="header-my-icon" href="profile.html">
+      <img class="avatar" src="" alt="自分のアイコン">
+    </a>
+    <button id="logout-button" class="btn-danger-text">ログアウト</button>
+  </div>
+</header>
+
+<div class="page-container">
+  <form id="search-form" class="search-bar">
+    <input type="text" id="search-input" placeholder="キーワードまたはユーザー名で検索">
+    <button type="submit" class="btn-primary" style="width:auto;padding:10px 18px;">検索</button>
+  </form>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="posts">投稿</button>
+    <button class="tab" data-tab="users">ユーザー</button>
+  </div>
+
+  <div id="result-list"></div>
+</div>
+
+<template id="post-card-template">
+  <div class="card post-card" data-post-id="">
+    <a class="post-avatar-link" href="#">
+      <img class="avatar post-avatar" src="" alt="">
+    </a>
+    <div class="post-card-body">
+      <div class="post-meta">
+        <a class="username post-username-link" href="#"></a>
+        <span class="time"></span>
+      </div>
+      <div class="post-text"></div>
+      <img class="post-image" hidden>
+      <div class="post-actions">
+        <button class="action-button comment-btn">💬 <span class="comment-count"></span></button>
+        <button class="action-button like-btn">♡ <span class="like-count"></span></button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/search.js"></script>
+</body>
+</html>

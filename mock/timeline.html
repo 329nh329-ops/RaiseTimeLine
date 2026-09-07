@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>タイムライン - RaiseTimeLine</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="app-header">
+  <span class="logo">RaiseTimeLine</span>
+  <div class="header-actions">
+    <a href="search.html" class="icon-button" title="検索">🔍</a>
+    <a id="header-my-icon" href="profile.html">
+      <img class="avatar" src="" alt="自分のアイコン">
+    </a>
+    <button id="logout-button" class="btn-danger-text">ログアウト</button>
+  </div>
+</header>
+
+<div class="page-container">
+  <div class="tabs">
+    <button class="tab active" data-tab="all">全体</button>
+    <button class="tab" data-tab="following">フォロー中</button>
+  </div>
+
+  <form id="post-form" class="post-form">
+    <img id="post-form-avatar" class="avatar" src="" alt="">
+    <div class="post-form-body">
+      <textarea id="post-body" maxlength="280" placeholder="今何してる？"></textarea>
+      <img id="post-image-preview" class="image-preview" hidden>
+      <div class="post-form-footer">
+        <label class="file-label" title="画像を添付">
+          🖼️
+          <input type="file" id="post-image-input" accept="image/*" hidden>
+        </label>
+        <span class="char-count"><span id="post-char-count">0</span>/280</span>
+        <button type="submit" class="btn-primary" style="width:auto;padding:8px 20px;">投稿する</button>
+      </div>
+    </div>
+  </form>
+
+  <div id="post-list"></div>
+
+  <div class="mock-footer">
+    これはHTML/CSS/JSのみの静的プロトタイプです（データ保存なし・ブラウザのlocalStorageのみ使用）。<br>
+    <button id="reset-mock-data">モックデータをリセット</button>
+  </div>
+</div>
+
+<template id="post-card-template">
+  <div class="card post-card" data-post-id="">
+    <a class="post-avatar-link" href="#">
+      <img class="avatar post-avatar" src="" alt="">
+    </a>
+    <div class="post-card-body">
+      <div class="post-meta">
+        <a class="username post-username-link" href="#"></a>
+        <span class="time"></span>
+      </div>
+      <div class="post-text"></div>
+      <img class="post-image" hidden>
+      <div class="post-actions">
+        <button class="action-button comment-btn">💬 <span class="comment-count"></span></button>
+        <button class="action-button like-btn">♡ <span class="like-count"></span></button>
+        <div class="post-manage" hidden>
+          <button class="link-button edit-btn">編集</button>
+          <button class="link-button danger delete-btn">削除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/timeline.js"></script>
+</body>
+</html>
