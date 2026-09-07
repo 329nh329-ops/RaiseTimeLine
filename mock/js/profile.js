@@ -33,8 +33,8 @@
         <div class="profile-username">${escapeHtml(user.username)}</div>
         ${user.bio ? `<p class="profile-bio">${escapeHtml(user.bio)}</p>` : ""}
         <div class="profile-stats">
-          <span><strong>${followingCountOf(db, user.id)}</strong> フォロー中</span>
-          <span><strong>${followerCountOf(db, user.id)}</strong> フォロワー</span>
+          <a href="follow-list.html?user=${user.id}&type=following"><strong>${followingCountOf(db, user.id)}</strong> フォロー中</a>
+          <a href="follow-list.html?user=${user.id}&type=followers"><strong>${followerCountOf(db, user.id)}</strong> フォロワー</a>
         </div>
       </div>
     `;
