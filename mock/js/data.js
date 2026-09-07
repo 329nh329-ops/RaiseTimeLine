@@ -143,7 +143,7 @@ function getCurrentUser() {
   return db.users.find((u) => u.id === id) || null;
 }
 
-/* 未ログインなら画面設計.md 10章の共通要素に従いログイン画面へリダイレクトする */
+/* 未ログインなら画面設計.md 11章の共通要素に従いログイン画面へリダイレクトする */
 function requireLogin() {
   if (!getCurrentUserId()) {
     location.href = "index.html";
@@ -192,6 +192,19 @@ function followerCountOf(db, userId) {
 
 function followingCountOf(db, userId) {
   return db.follows.filter((f) => f.followerId === userId).length;
+}
+
+function followingUsersOf(db, userId) {
+  return followingIdsOf(db, userId)
+    .map((id) => findUserById(db, id))
+    .filter(Boolean);
+}
+
+function followerUsersOf(db, userId) {
+  return db.follows
+    .filter((f) => f.followingId === userId)
+    .map((f) => findUserById(db, f.followerId))
+    .filter(Boolean);
 }
 
 function toggleFollow(db, followerId, followingId) {

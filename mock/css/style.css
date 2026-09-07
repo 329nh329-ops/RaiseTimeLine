@@ -134,6 +134,15 @@ button {
   margin-bottom: 12px;
 }
 
+.success-message {
+  background: #e8f5e9;
+  color: #1e7e34;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
 /* ---------- ヘッダー ---------- */
 
 .app-header {
@@ -363,8 +372,11 @@ button {
 
 .post-manage {
   margin-left: auto;
-  display: flex;
   gap: 8px;
+}
+
+.post-manage:not([hidden]) {
+  display: flex;
 }
 
 .link-button {
@@ -456,6 +468,10 @@ button {
   gap: 16px;
   font-size: 14px;
   color: var(--color-subtext);
+}
+
+.profile-stats a:hover {
+  text-decoration: underline;
 }
 
 .profile-stats strong {

@@ -42,10 +42,9 @@ function handleSignupForm() {
       return;
     }
 
-    const user = createUser(db, { email, password, username });
+    createUser(db, { email, password, username });
     saveDB(db);
-    setCurrentUserId(user.id);
-    location.href = "timeline.html";
+    location.href = "index.html?registered=1";
   });
 }
 
