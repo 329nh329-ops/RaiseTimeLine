@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: raisetimeline-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/raisetimeline
+    username: raisetimeline
+    password: raisetimeline
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+app:
+  jwt:
+    # 開発環境用のデフォルト値。本番相当環境では環境変数 APP_JWT_SECRET で上書きする
+    secret: ${APP_JWT_SECRET:dev-only-secret-key-please-override-in-production-min-32bytes}
+    expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}
