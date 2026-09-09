@@ -1,5 +1,6 @@
 package com.raisetimeline.backend.security;
 
+import com.raisetimeline.backend.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -7,11 +8,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-/**
- * 暫定設定。認証API実装（Issue #7）でJWT検証フィルタを追加し、
- * 認証必須エンドポイントの制御を本格化する。
- */
 @Configuration
 public class SecurityConfig {
 
@@ -21,13 +19,23 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            JwtTokenProvider jwtTokenProvider,
+            UserRepository userRepository,
+            JwtAuthenticationEntryPoint authenticationEntryPoint
+    ) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(handling -> handling.authenticationEntryPoint(authenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/health").permitAll()
-                        .anyRequest().authenticated());
+                        .requestMatchers("/api/health", "/api/auth/**").permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtTokenProvider, userRepository),
+                        UsernamePasswordAuthenticationFilter.class
+                );
         return http.build();
     }
 }
