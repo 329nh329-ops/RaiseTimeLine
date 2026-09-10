@@ -66,7 +66,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void ログインに成功するとJWTが返る() throws Exception {
+    void ログインに成功するとアクセストークンとリフレッシュトークンが返る() throws Exception {
         String signupBody = objectMapper.writeValueAsString(new SignupRequestFixture("login@example.com", "password1", "loginuser"));
         mockMvc.perform(post("/api/auth/signup").contentType(MediaType.APPLICATION_JSON).content(signupBody))
                 .andExpect(status().isCreated());
@@ -74,7 +74,8 @@ class AuthControllerTest {
         String loginBody = objectMapper.writeValueAsString(new LoginRequestFixture("login@example.com", "password1"));
         mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(loginBody))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").isNotEmpty());
+                .andExpect(jsonPath("$.accessToken").isNotEmpty())
+                .andExpect(jsonPath("$.refreshToken").isNotEmpty());
     }
 
     @Test
@@ -105,7 +106,7 @@ class AuthControllerTest {
         String loginResponse = mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(loginBody))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
-        String token = objectMapper.readTree(loginResponse).get("token").asText();
+        String token = objectMapper.readTree(loginResponse).get("accessToken").asText();
 
         mockMvc.perform(get("/api/users/me").header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
@@ -119,9 +120,78 @@ class AuthControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    void リフレッシュトークンで新しいアクセストークンを取得できる() throws Exception {
+        String signupBody = objectMapper.writeValueAsString(new SignupRequestFixture("refresh@example.com", "password1", "refreshuser"));
+        mockMvc.perform(post("/api/auth/signup").contentType(MediaType.APPLICATION_JSON).content(signupBody))
+                .andExpect(status().isCreated());
+
+        String loginBody = objectMapper.writeValueAsString(new LoginRequestFixture("refresh@example.com", "password1"));
+        String loginResponse = mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(loginBody))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        String refreshToken = objectMapper.readTree(loginResponse).get("refreshToken").asText();
+
+        String refreshBody = objectMapper.writeValueAsString(new RefreshRequestFixture(refreshToken));
+        mockMvc.perform(post("/api/auth/refresh").contentType(MediaType.APPLICATION_JSON).content(refreshBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").isNotEmpty())
+                .andExpect(jsonPath("$.refreshToken").isNotEmpty());
+    }
+
+    @Test
+    void 使用済みのリフレッシュトークンは再利用できない() throws Exception {
+        String signupBody = objectMapper.writeValueAsString(new SignupRequestFixture("rotate@example.com", "password1", "rotateuser"));
+        mockMvc.perform(post("/api/auth/signup").contentType(MediaType.APPLICATION_JSON).content(signupBody))
+                .andExpect(status().isCreated());
+
+        String loginBody = objectMapper.writeValueAsString(new LoginRequestFixture("rotate@example.com", "password1"));
+        String loginResponse = mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(loginBody))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        String refreshToken = objectMapper.readTree(loginResponse).get("refreshToken").asText();
+
+        String refreshBody = objectMapper.writeValueAsString(new RefreshRequestFixture(refreshToken));
+        mockMvc.perform(post("/api/auth/refresh").contentType(MediaType.APPLICATION_JSON).content(refreshBody))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/auth/refresh").contentType(MediaType.APPLICATION_JSON).content(refreshBody))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void 不正なリフレッシュトークンは401になる() throws Exception {
+        String refreshBody = objectMapper.writeValueAsString(new RefreshRequestFixture("invalid-refresh-token"));
+        mockMvc.perform(post("/api/auth/refresh").contentType(MediaType.APPLICATION_JSON).content(refreshBody))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void ログアウトするとリフレッシュトークンが無効化される() throws Exception {
+        String signupBody = objectMapper.writeValueAsString(new SignupRequestFixture("logout@example.com", "password1", "logoutuser"));
+        mockMvc.perform(post("/api/auth/signup").contentType(MediaType.APPLICATION_JSON).content(signupBody))
+                .andExpect(status().isCreated());
+
+        String loginBody = objectMapper.writeValueAsString(new LoginRequestFixture("logout@example.com", "password1"));
+        String loginResponse = mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(loginBody))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        String refreshToken = objectMapper.readTree(loginResponse).get("refreshToken").asText();
+
+        String refreshBody = objectMapper.writeValueAsString(new RefreshRequestFixture(refreshToken));
+        mockMvc.perform(post("/api/auth/logout").contentType(MediaType.APPLICATION_JSON).content(refreshBody))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(post("/api/auth/refresh").contentType(MediaType.APPLICATION_JSON).content(refreshBody))
+                .andExpect(status().isUnauthorized());
+    }
+
     private record SignupRequestFixture(String email, String password, String username) {
     }
 
     private record LoginRequestFixture(String email, String password) {
+    }
+
+    private record RefreshRequestFixture(String refreshToken) {
     }
 }

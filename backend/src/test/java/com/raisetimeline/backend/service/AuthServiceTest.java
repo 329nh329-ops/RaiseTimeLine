@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import com.raisetimeline.backend.dto.AuthResponse;
 import com.raisetimeline.backend.dto.LoginRequest;
 import com.raisetimeline.backend.dto.SignupRequest;
 import com.raisetimeline.backend.entity.User;
@@ -13,6 +14,7 @@ import com.raisetimeline.backend.exception.EmailAlreadyExistsException;
 import com.raisetimeline.backend.exception.InvalidCredentialsException;
 import com.raisetimeline.backend.repository.UserRepository;
 import com.raisetimeline.backend.security.JwtTokenProvider;
+import com.raisetimeline.backend.security.RefreshTokenService;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,8 +34,11 @@ class AuthServiceTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @Mock
+    private RefreshTokenService refreshTokenService;
+
     private AuthService authService() {
-        return new AuthService(userRepository, passwordEncoder, jwtTokenProvider);
+        return new AuthService(userRepository, passwordEncoder, jwtTokenProvider, refreshTokenService);
     }
 
     @Test
@@ -59,15 +64,17 @@ class AuthServiceTest {
     }
 
     @Test
-    void 正しい認証情報でログインするとトークンを返す() {
+    void 正しい認証情報でログインするとアクセストークンとリフレッシュトークンを返す() {
         User user = new User("login@example.com", "hashed", "user");
         when(userRepository.findByEmail("login@example.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("password1", "hashed")).thenReturn(true);
-        when(jwtTokenProvider.generateToken(any(), anyString())).thenReturn("dummy-token");
+        when(jwtTokenProvider.generateToken(any(), anyString())).thenReturn("dummy-access-token");
+        when(refreshTokenService.issue(any())).thenReturn("dummy-refresh-token");
 
-        String token = authService().login(new LoginRequest("login@example.com", "password1"));
+        AuthResponse response = authService().login(new LoginRequest("login@example.com", "password1"));
 
-        assertThat(token).isEqualTo("dummy-token");
+        assertThat(response.accessToken()).isEqualTo("dummy-access-token");
+        assertThat(response.refreshToken()).isEqualTo("dummy-refresh-token");
     }
 
     @Test
@@ -88,5 +95,26 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService().login(new LoginRequest("login@example.com", "wrongpass1")))
                 .isInstanceOf(InvalidCredentialsException.class)
                 .hasMessage("メールアドレスまたはパスワードが正しくありません");
+    }
+
+    @Test
+    void リフレッシュトークンが有効なら新しいアクセストークンを返す() {
+        User user = new User("login@example.com", "hashed", "user");
+        when(refreshTokenService.rotate("old-refresh-token"))
+                .thenReturn(new RefreshTokenService.RotationResult(1L, "new-refresh-token"));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(jwtTokenProvider.generateToken(any(), anyString())).thenReturn("new-access-token");
+
+        AuthResponse response = authService().refresh("old-refresh-token");
+
+        assertThat(response.accessToken()).isEqualTo("new-access-token");
+        assertThat(response.refreshToken()).isEqualTo("new-refresh-token");
+    }
+
+    @Test
+    void ログアウトするとリフレッシュトークンが失効する() {
+        authService().logout("some-refresh-token");
+
+        org.mockito.Mockito.verify(refreshTokenService).revoke("some-refresh-token");
     }
 }

@@ -14,4 +14,5 @@ app:
   jwt:
     # 開発環境用のデフォルト値。本番相当環境では環境変数 APP_JWT_SECRET で上書きする
     secret: ${APP_JWT_SECRET:dev-only-secret-key-please-override-in-production-min-32bytes}
-    expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}
+    access-expiration-ms: ${APP_JWT_ACCESS_EXPIRATION_MS:900000}
+    refresh-expiration-ms: ${APP_JWT_REFRESH_EXPIRATION_MS:1209600000}

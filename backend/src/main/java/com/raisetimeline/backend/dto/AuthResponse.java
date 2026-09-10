@@ -1,4 +1,4 @@
 package com.raisetimeline.backend.dto;
 
-public record AuthResponse(String token) {
+public record AuthResponse(String accessToken, String refreshToken) {
 }

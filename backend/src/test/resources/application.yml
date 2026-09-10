@@ -11,4 +11,5 @@ spring:
 app:
   jwt:
     secret: test-only-secret-key-for-junit-tests-min-32bytes
-    expiration-ms: 3600000
+    access-expiration-ms: 3600000
+    refresh-expiration-ms: 1209600000
