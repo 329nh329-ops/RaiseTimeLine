@@ -3,13 +3,13 @@ import { Navigate } from 'react-router-dom'
 import { useAuth } from './useAuth'
 
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const { token, isLoading } = useAuth()
+  const { accessToken, isLoading } = useAuth()
 
   if (isLoading) {
     return null
   }
 
-  if (!token) {
+  if (!accessToken) {
     return <Navigate to="/login" replace />
   }
 
