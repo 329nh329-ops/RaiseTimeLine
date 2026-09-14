@@ -2,6 +2,7 @@ package com.raisetimeline.backend.controller;
 
 import com.raisetimeline.backend.dto.AuthResponse;
 import com.raisetimeline.backend.dto.LoginRequest;
+import com.raisetimeline.backend.dto.RefreshRequest;
 import com.raisetimeline.backend.dto.SignupRequest;
 import com.raisetimeline.backend.dto.UserResponse;
 import com.raisetimeline.backend.entity.User;
@@ -32,7 +33,19 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        String token = authService.login(request);
-        return ResponseEntity.ok(new AuthResponse(token));
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshRequest request) {
+        AuthResponse response = authService.refresh(request.refreshToken());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshRequest request) {
+        authService.logout(request.refreshToken());
+        return ResponseEntity.noContent().build();
     }
 }
