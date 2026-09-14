@@ -8,7 +8,7 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { loginWithToken } = useAuth()
+  const { loginWithTokens } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const registered = searchParams.get('registered') === '1'
@@ -18,8 +18,8 @@ export function LoginPage() {
     setError(null)
     setIsSubmitting(true)
     try {
-      const token = await login(email, password)
-      await loginWithToken(token)
+      const { accessToken, refreshToken } = await login(email, password)
+      await loginWithTokens(accessToken, refreshToken)
       navigate('/welcome')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'ログインに失敗しました')

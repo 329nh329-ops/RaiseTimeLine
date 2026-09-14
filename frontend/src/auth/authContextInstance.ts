@@ -2,11 +2,11 @@ import { createContext } from 'react'
 import type { UserResponse } from '../api/authApi'
 
 export type AuthContextValue = {
-  token: string | null
+  accessToken: string | null
   user: UserResponse | null
   isLoading: boolean
-  loginWithToken: (token: string) => Promise<void>
-  logout: () => void
+  loginWithTokens: (accessToken: string, refreshToken: string) => Promise<void>
+  logout: () => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)

@@ -6,8 +6,14 @@ export type UserResponse = {
   iconImageUrl: string | null
 }
 
+export type TokenPair = {
+  accessToken: string
+  refreshToken: string
+}
+
 type AuthResponse = {
-  token: string
+  accessToken: string
+  refreshToken: string
 }
 
 type ErrorResponse = {
@@ -15,6 +21,8 @@ type ErrorResponse = {
 }
 
 export class ApiError extends Error {}
+
+export class UnauthorizedError extends ApiError {}
 
 async function parseErrorMessage(response: Response): Promise<string> {
   try {
@@ -39,7 +47,7 @@ export async function signup(email: string, password: string, username: string):
   return (await response.json()) as UserResponse
 }
 
-export async function login(email: string, password: string): Promise<string> {
+export async function login(email: string, password: string): Promise<TokenPair> {
   const response = await fetch('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -51,13 +59,44 @@ export async function login(email: string, password: string): Promise<string> {
   }
 
   const body = (await response.json()) as AuthResponse
-  return body.token
+  return { accessToken: body.accessToken, refreshToken: body.refreshToken }
 }
 
-export async function fetchCurrentUser(token: string): Promise<UserResponse> {
-  const response = await fetch('/api/users/me', {
-    headers: { Authorization: `Bearer ${token}` },
+export async function refresh(refreshToken: string): Promise<TokenPair> {
+  const response = await fetch('/api/auth/refresh', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken }),
   })
+
+  if (!response.ok) {
+    throw new UnauthorizedError(await parseErrorMessage(response))
+  }
+
+  const body = (await response.json()) as AuthResponse
+  return { accessToken: body.accessToken, refreshToken: body.refreshToken }
+}
+
+export async function logout(refreshToken: string): Promise<void> {
+  const response = await fetch('/api/auth/logout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken }),
+  })
+
+  if (!response.ok) {
+    throw new ApiError(await parseErrorMessage(response))
+  }
+}
+
+export async function fetchCurrentUser(accessToken: string): Promise<UserResponse> {
+  const response = await fetch('/api/users/me', {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+
+  if (response.status === 401) {
+    throw new UnauthorizedError(await parseErrorMessage(response))
+  }
 
   if (!response.ok) {
     throw new ApiError(await parseErrorMessage(response))
